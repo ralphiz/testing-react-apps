@@ -6,9 +6,9 @@ import {waitForElementToBeRemoved} from '@testing-library/react'
 import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {build, fake} from '@jackfranklin/test-data-bot'
-import {rest} from 'msw'
 import {setupServer} from 'msw/node'
 import Login from '../../components/login-submission'
+import {handlers} from 'test/server-handlers'
 
 const buildLoginForm = build({
   fields: {
@@ -17,21 +17,7 @@ const buildLoginForm = build({
   },
 })
 
-const server = setupServer(
-  rest.post(
-    'https://auth-provider.example.com/api/login',
-    // (request, response, context)
-    async (req, res, ctx) => {
-      if (!req.body.password) {
-        return res(ctx.status(400), ctx.json({message: 'password required'}))
-      }
-      if (!req.body.username) {
-        return res(ctx.status(400), ctx.json({message: 'username required'}))
-      }
-      return res(ctx.json({username: req.body.username}))
-    },
-  ),
-)
+const server = setupServer(...handlers)
 
 beforeAll(() => server.listen())
 afterAll(() => server.close())
