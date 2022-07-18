@@ -58,6 +58,17 @@ function setup({initialProps} = {}) {
   return result
 }
 
+/**
+ * For the tests below, you can use the renderHook function
+ * from React-Hooks Testing Library
+ *
+ * The example usage is:
+ * const {result} = renderHook(useCounter)
+ *
+ * Or with props:
+ * const {result} = renderHook(useCounter, {initialProps: {initialCount: 2}})
+ */
+
 test('expose the count and increment/decrement functions', () => {
   const result = setup()
   expect(result.current.count).toBe(0)
