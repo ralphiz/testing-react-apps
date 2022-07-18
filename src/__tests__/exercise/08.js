@@ -2,7 +2,7 @@
 // http://localhost:3000/counter-hook
 
 import * as React from 'react'
-import {render, screen} from '@testing-library/react'
+import {render, act, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import useCounter from '../../components/use-counter'
 
@@ -46,6 +46,36 @@ test('initial count and step modification', async () => {
   expect(message).toHaveTextContent('Current count: 4')
   await userEvent.click(decrement)
   expect(message).toHaveTextContent('Current count: 2')
+})
+
+test('expose the count and increment/decrement functions', () => {
+  let result
+  function TestComponent() {
+    result = useCounter()
+    return null
+  }
+  render(<TestComponent />)
+  expect(result.count).toBe(0)
+  act(() => result.increment())
+  expect(result.count).toBe(1)
+  act(() => result.decrement())
+  expect(result.count).toBe(0)
+})
+
+test('expose the count and increment/decrement functions with initial value and step values changed', () => {
+  const INITIAL = 5
+  const STEP = 2
+  let result
+  function TestComponent() {
+    result = useCounter({initialCount: INITIAL, step: STEP})
+    return null
+  }
+  render(<TestComponent />)
+  expect(result.count).toBe(INITIAL)
+  act(() => result.increment())
+  expect(result.count).toBe(7)
+  act(() => result.decrement())
+  expect(result.count).toBe(INITIAL)
 })
 
 /* eslint no-unused-vars:0 */
