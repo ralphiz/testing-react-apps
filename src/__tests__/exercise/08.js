@@ -48,34 +48,41 @@ test('initial count and step modification', async () => {
   expect(message).toHaveTextContent('Current count: 2')
 })
 
-test('expose the count and increment/decrement functions', () => {
-  let result
+function setup({initialProps} = {}) {
+  const result = {}
   function TestComponent() {
-    result = useCounter()
+    result.current = useCounter(initialProps)
     return null
   }
   render(<TestComponent />)
-  expect(result.count).toBe(0)
-  act(() => result.increment())
-  expect(result.count).toBe(1)
-  act(() => result.decrement())
-  expect(result.count).toBe(0)
+  return result
+}
+
+test('expose the count and increment/decrement functions', () => {
+  const result = setup()
+  expect(result.current.count).toBe(0)
+  act(() => result.current.increment())
+  expect(result.current.count).toBe(1)
+  act(() => result.current.decrement())
+  expect(result.current.count).toBe(0)
 })
 
-test('expose the count and increment/decrement functions with initial value and step values changed', () => {
-  const INITIAL = 5
-  const STEP = 2
-  let result
-  function TestComponent() {
-    result = useCounter({initialCount: INITIAL, step: STEP})
-    return null
-  }
-  render(<TestComponent />)
-  expect(result.count).toBe(INITIAL)
-  act(() => result.increment())
-  expect(result.count).toBe(7)
-  act(() => result.decrement())
-  expect(result.count).toBe(INITIAL)
+test('expose the count and increment/decrement functions with initial value changed', () => {
+  const result = setup({initialProps: {initialCount: 4}})
+  expect(result.current.count).toBe(4)
+  act(() => result.current.increment())
+  expect(result.current.count).toBe(5)
+  act(() => result.current.decrement())
+  expect(result.current.count).toBe(4)
+})
+
+test('expose the count and increment/decrement functions with step changed', () => {
+  const result = setup({initialProps: {step: 2}})
+  expect(result.current.count).toBe(0)
+  act(() => result.current.increment())
+  expect(result.current.count).toBe(2)
+  act(() => result.current.decrement())
+  expect(result.current.count).toBe(0)
 })
 
 /* eslint no-unused-vars:0 */
